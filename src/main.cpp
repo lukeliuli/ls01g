@@ -37,40 +37,25 @@ void publish_scan(ros::Publisher *pub, double *dist, double *intensities, int co
 	scan_msg.intensities.resize(count);
 	scan_msg.ranges.resize(count);
 
-	if (!inverted)
-	{
-	for (int i = count - 1; i >= 0; i--)
-	{
-		if((i >= angle_disable_min) && (i < angle_disable_max))		// disable angle part
-		{
-			if (min_as_zero)
-				scan_msg.ranges[i] = 0.0;
-			else
-				scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
-		}
-		else if(dist[count - i - 1] == 0.0 && zero_as_max)
-			scan_msg.ranges[i] = scan_msg.range_max - 0.2;
-		else if(dist[count - i - 1] == 0.0)
-			if (min_as_zero)
-				scan_msg.ranges[i] = 0.0;
-			else
-				scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
-		else
-			scan_msg.ranges[i] = dist[count - i - 1] / 1000.0;
-		scan_msg.intensities[i] = floor(intensities[count - i - 1]);
-	}}
+	if (!inverted) {
+        for (int i = count - 1; i >= 0; i--) {
+            if (dist[count - i - 1] == 0.0 && zero_as_max)
+                scan_msg.ranges[i] = scan_msg.range_max - 0.2;
+            else if (dist[count - i - 1] == 0.0)
+                if (min_as_zero)
+                    scan_msg.ranges[i] = 0.0;
+                else
+                    scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
+            else
+                scan_msg.ranges[i] = dist[count - i - 1] / 1000.0;
+            scan_msg.intensities[i] = floor(intensities[count - i - 1]);
+        }
+    }
 	else
 	{
 		for (int i = 0; i <= 179; i++)
 			{
-				if((i >= angle_disable_min) && (i < angle_disable_max))
-				{
-					if (min_as_zero)
-						scan_msg.ranges[i] = 0.0;
-					else
-						scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
-				}
-				else if(dist[179-i] == 0.0 && zero_as_max)
+				if(dist[179-i] == 0.0 && zero_as_max)
 					scan_msg.ranges[i] = scan_msg.range_max - 0.2;
 				else if(dist[179-i] == 0.0)
 					if (min_as_zero)
@@ -83,14 +68,7 @@ void publish_scan(ros::Publisher *pub, double *dist, double *intensities, int co
 			}
 		for (int i = 180; i < 360; i++)
 			{
-				if((i >= angle_disable_min) && (i < angle_disable_max))
-				{
-					if (min_as_zero)
-						scan_msg.ranges[i] = 0.0;
-					else
-						scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
-				}
-				else if(dist[540-i] == 0.0 && zero_as_max)
+				if(dist[540-i] == 0.0 && zero_as_max)
 					scan_msg.ranges[i] = scan_msg.range_max - 0.2;
 				else if(dist[540-i] == 0.0)
 					if (min_as_zero)
@@ -102,6 +80,16 @@ void publish_scan(ros::Publisher *pub, double *dist, double *intensities, int co
 				scan_msg.intensities[i] = floor(intensities[540-i]);
 			}
 	}
+    for (int i = 0; i < 360; i++){
+        if((i >= angle_disable_min) && (i < angle_disable_max))		// disable angle part
+        {
+            if (min_as_zero)
+                scan_msg.ranges[i] = 0.0;
+            else
+                scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
+        }
+    }
+
 	pub->publish(scan_msg);
 }
 
