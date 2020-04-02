@@ -42,6 +42,11 @@
 #define LSLIDAR_CMD_STOPSCAN           0x21
 #define LSLIDAR_CMD_STOPSCAN_END       0xc6
 
+enum Command
+{
+	STOP_DATA = 1, STOP_MOTOR = 2, START_MOTOR_AND_SCAN = 4
+};
+
 struct ture_data{
 	int ture;
 	int curr;
@@ -91,7 +96,7 @@ public:
     int StartScan();
     int GetScanData( double *angle, double *distance, int len, double *speed);
     int Reset(void);
-    int StopScan(void);
+    int StopScan(Command cmd);
     void CloseSerial();
 };
 
